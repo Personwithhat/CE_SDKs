@@ -387,6 +387,12 @@ struct gmp_float_imp
       BOOST_ASSERT(m_data[0]._mp_d);
       return m_data;
    }
+
+	// PERSONAL EDITS: Check to see if this has been zero'd out by memset(0) and the like. Better than exposing m_data.
+	bool valid() const {
+		return (m_data[0]._mp_d != 0);
+	}
+
 protected:
    mpf_t m_data;
    static unsigned& get_default_precision() BOOST_NOEXCEPT
