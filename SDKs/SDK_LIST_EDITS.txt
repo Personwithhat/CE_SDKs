@@ -1,0 +1,5 @@
+-------------------------
+## List of SDK changes ##
+-------------------------
+TangentBasisComputation/mikkelsen:
+	Added missing StdAfx.h file
