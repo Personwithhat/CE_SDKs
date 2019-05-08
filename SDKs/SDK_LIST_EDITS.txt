@@ -40,6 +40,11 @@ Preparing MSys2:
 	Rename to yasm.exe and place into C:\msys64\usr\bin
 
 Compiling GMP:
+	PERSONAL TODO: Possible options... 
+		--enable-threads=win32 (unlikely)
+		--enable-alloca=malloc-notreentrant (seems useless) 
+		--enable-relocatable (Not an option?)
+
 	Switch to the mingw64 application, NOT MSYS2 to compile/install GMP.
 
 	Download and unzip GMP tar from https://gmplib.org/
@@ -102,3 +107,20 @@ CryEngine edits:
 	Copy libgcc_s_seh-1.dll and libwinpthread-1.dll from mingw64/bin to /CRYENGINE/Code/SDKs/MPFR/lib.
 	
 	If ya want you can view the required library appends/etc. in Tools/CMake/Configure.cmake and Tools/RC/CmakeLists.txt
+	
+==================================== Resources ====================================
+Compiling GMP:
+	https://machinecognitis.github.io/Math.Gmp.Native/html/846f5c8a-6cba-433e-9f18-cde2ff5695cd.htm
+	This version gets rid of this error: unresolved external symbol __getreent referenced in function __gmp_default_allocate	 (file) libgmp.a(memory.o)
+	Possibly just because --enable-fat or yasm. Most of the installed packages seem pointless (git etc)
+	
+	// Installation resources: Older Cygwin resources.
+	// 	http://preshing.com/20141108/how-to-install-the-latest-gcc-on-windows/  
+	// 	https://stackoverflow.com/questions/16049726/installing-gmp-on-windows-with-cygwin
+
+	// Setting up warning ignorance
+	https://www.viva64.com/en/k/0048/
+	
+Adding GMP library to VStudio:	
+	https://stackoverflow.com/questions/23882112/how-to-add-the-static-libraries-to-the-project-in-visual-studio
+	https://stackoverflow.com/questions/25446726/running-pbc-in-windows-visual-studio
