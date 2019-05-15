@@ -22,6 +22,11 @@ Boost:
 			Only for assignment. No asserts added.
 	
 -------------------------
+## Compiling QT ##
+------------------------
+	See BUILDING_QT.txt
+
+-------------------------
 ## Compiling GMP and MPFR Libraries ##
 -------------------------
 PERSONAL IMPROVE:  
