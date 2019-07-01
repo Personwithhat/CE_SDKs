@@ -408,11 +408,14 @@ protected:
 #pragma warning(disable:4127)  // Conditional expression is constant
 #endif
 
+// Toggle POD-type MPFloats based on custom MPFR library tweaks
+#define POD 0
+//#define POD m_buffer
 template <unsigned digits10>
 struct mpfr_float_imp<digits10, allocate_stack>
 {
 #ifdef BOOST_HAS_LONG_LONG
-   typedef mpl::list<long, boost::long_long_type>                     signed_types;
+   typedef mpl::list<long, boost::long_long_type>             signed_types;
    typedef mpl::list<unsigned long, boost::ulong_long_type>   unsigned_types;
 #else
    typedef mpl::list<long>                                signed_types;
@@ -430,19 +433,23 @@ struct mpfr_float_imp<digits10, allocate_stack>
    }
    mpfr_float_imp()
    {
-      mpfr_custom_init(m_buffer, digits2);
-      mpfr_custom_init_set(m_data, MPFR_NAN_KIND, 0, digits2, m_buffer);
+      mpfr_custom_init(POD, digits2);
+      mpfr_custom_init_set(m_data, MPFR_NAN_KIND, 0, digits2, POD);
       mpfr_set_ui(m_data, 0u, GMP_RNDN);
    }
 
    mpfr_float_imp(const mpfr_float_imp& o)
    {
-      mpfr_custom_init(m_buffer, digits2);
-      mpfr_custom_init_set(m_data, MPFR_NAN_KIND, 0, digits2, m_buffer);
+      BOOST_ASSERT(o.valid());
+
+      mpfr_custom_init(POD, digits2);
+      mpfr_custom_init_set(m_data, MPFR_NAN_KIND, 0, digits2, POD);
       mpfr_set(m_data, o.m_data, GMP_RNDN);
    }
    mpfr_float_imp& operator = (const mpfr_float_imp& o)
    {
+      BOOST_ASSERT(o.valid());
+
       mpfr_set(m_data, o.m_data, GMP_RNDN);
       return *this;
    }
@@ -517,8 +524,11 @@ struct mpfr_float_imp<digits10, allocate_stack>
       }
       return *this;
    }
+   // According to MPFR: /* Using memcpy is a few slower than swapping by hand. */
    void swap(mpfr_float_imp& o) BOOST_NOEXCEPT
    {
+      BOOST_ASSERT(o.valid());
+
       // We have to swap by copying:
       mpfr_float_imp t(*this);
       *this = o;
@@ -526,7 +536,7 @@ struct mpfr_float_imp<digits10, allocate_stack>
    }
    std::string str(std::streamsize digits, std::ios_base::fmtflags f)const
    {
-      BOOST_ASSERT(m_data[0]._mpfr_d);
+      BOOST_ASSERT(valid());
 
       bool scientific = (f & std::ios_base::scientific) == std::ios_base::scientific;
       bool fixed      = (f & std::ios_base::fixed) == std::ios_base::fixed;
@@ -663,10 +673,32 @@ struct mpfr_float_imp<digits10, allocate_stack>
    {
       return m_data;
    }
+
+   // Check to see if this has been zero'd out by memset(0) and the like.
+   bool valid() const {
+	   return (m_data[0]._mpfr_prec != 0);
+   }
+
+   // Fix MPFloat post memset(0)
+   void fixSet() {
+	   BOOST_ASSERT(!valid());
+
+	   mpfr_custom_init_set(m_data, MPFR_NAN_KIND, 0, digits2, POD);
+	   mpfr_set_ui(m_data, 0u, GMP_RNDN);
+   }
+
+   // memHack() extension for Physics/etc. invalidation. Works with POD and non-POD.
+   // PERSONAL IMPROVE: Deprecated for now, remove later on if really not needed.
+   void setInvalid() {
+	   m_data[0]._mpfr_prec = 0;
+   }
+
+// PERSONAL NOTE: Order matters, m_data must be right before m_buffer for POD type mpfr to work.
 protected:
    mpfr_t m_data;
    mp_limb_t m_buffer[limb_count];
 };
+#undef POD
 
 #ifdef BOOST_MSVC
 #pragma warning(pop)
