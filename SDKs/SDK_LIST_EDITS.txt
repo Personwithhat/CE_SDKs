@@ -9,17 +9,11 @@ GMP & MPFR:
 	
 	Current versions:
 		GMP 6.1.2
-		MPFR 4.0.1
+		MPFR 4.0.2
 	
 Boost:
-	Edited boost/boost/multiprecision/gmp.hpp.
-		For unsafe() option call.(tiny edit) Bypasses ASSERT() check and protected status.
-		Used for 'is_unused()' checks. Non-conflicting with any existing code and what not.
-	
-	Eedited boost/boost/multiprecision/mpfr.hpp:
-		Added checks for zeroed out buffer in 'allocate_stack' version (replicates allocate_dynamic) 
-			Due to memset(0)'s selective usefulness.
-			Only for assignment. No asserts added.
+	Edited boost/boost/multiprecision/mpfr.hpp:
+		Tweaks for custom MPFR POD-style compatibility.
 	
 -------------------------
 ## Compiling QT ##

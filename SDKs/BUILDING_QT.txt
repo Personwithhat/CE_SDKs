@@ -8,8 +8,8 @@ Requirements:
 		Qt Data Visualization
 		Qt WebEngine
 	
-2.  Python 2.7 (used for QtWebEngine and PySide2 compilation)
-	https://www.python.org/ftp/python/2.7.16/python-2.7.16.amd64.msi
+2.  Python 3.7 (used for QtWebEngine and PySide2 compilation)
+	https://www.python.org/ftp/python/3.7.3/python-3.7.3-amd64.exe
 	
 3.  OpenSSL (PySide2 cannot make wrappers for QNetworkReply because of missed #ifdef) 
 	https://slproweb.com/products/Win32OpenSSL.html
@@ -17,27 +17,24 @@ Requirements:
 	
 4.  Git & CMake (for getting PySide2 sources)
 5.  Clang (used for PySide2 compilation)
-	http://download.qt.io/development_releases/prebuilt/libclang/libclang-release_70-based-windows-vs2015_64.7z
-
-	TOOD: Testing, might need to use the 70-baseD:
 	http://download.qt.io/development_releases/prebuilt/libclang/libclang-release_80-based-windows-vs2017_64.7z
 
 ## 1\. Build QT
 1. Create working folder, set var. (Disk should have at least 140GB room) 
 	`set ROOT=D:\Github\QT_SDK` 
-2. Copy only SOURCES: `D:\Qt\Qt5.12.3\5.12.3\Src` to `%ROOT%\Src`
+2. Copy only SOURCES: `D:\Qt\Qt5.12.3\5.12.3\Src` to `%ROOT%\Src_5.12.3`
 3. Create/enter build folder, `cd %ROOT%\Build`
 4. Setup VS 2017 environment: 
     `"D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"`
 5. If python is not in %PATH%, set it up:  
-    `set path=D:\Python27;%path%`
+    `set path=C:\Python37;%path%`
 6. Run the below"
-    `cd %ROOT%\Build && ..\Src\configure.bat -prefix ..\msvc2017_64\ -nomake examples -nomake tests -platform win32-msvc -opensource -confirm-license -silent -mp -force-debug-info -openssl -I "C:/Program Files/OpenSSL-Win64/include" -L "C:/Program Files/OpenSSL-Win64/lib"`
+    `cd %ROOT%\Build && ..\Src_5.12.3\configure.bat -prefix ..\msvc2017_64\ -nomake examples -nomake tests -platform win32-msvc -opensource -confirm-license -silent -mp -force-debug-info -openssl -I "C:/Program Files/OpenSSL-Win64/include" -L "C:/Program Files/OpenSSL-Win64/lib"`
 		-silent => less output  
 		-mp => multiprocess compilation  
 		-force-debug-info => PDBs for release  
 		-openssl => Required for Shiboken2 build without Qt source files modifications  
-	TODO: Why win32-msvc platform here ^^^^, and not x64? Will this build/work??
+	TODO: Why win32-msvc platform here ^^^^ and not x64? Builds/works but still...
 	
 7. Run `nmake && nmake install`, output goes to `%ROOT%\msvc2017_64`
 8. Delete build folder, `rmdir %ROOT%\Build` (~130 GB, not needed anymore)
@@ -61,24 +58,21 @@ Requirements:
 6.  Setup SDK file tree: 
 	`set QROOT=%ROOT%\Qt\5.12.3\msvc2017_64`
 	`mkdir %QROOT% && move /y %ROOT%\msvc2017_64 %QROOT%\Qt`
-    `xcopy /E /I %ROOT%\pyside-setup\build\lib.win-amd64-2.7\PySide2 %QROOT%\PySide\PySide2`  
-    `del /Q %QROOT%\PySide\PySide2\include`  
-    `del /Q %QROOT%\PySide\PySide2\Qt*.dll`  
-    `del /Q %QROOT%\PySide\PySide2\Qt*.pyi`  
-    `xcopy /E /I %ROOT%\pyside-setup\pyside2_install\py2.7-qt5.12.3-64bit-release\include %QROOT%\PySide\PySide2\include`
+    `xcopy /E /I %ROOT%\pyside-setup\build\lib.win-amd64-3.7\PySide2 %QROOT%\PySide\PySide2`
+	`del /Q %QROOT%\PySide\PySide2\include`
+	`del /Q %QROOT%\PySide\PySide2\Qt*.dll`
+	`del /Q %QROOT%\PySide\PySide2\Qt*.pyi`
+    `xcopy /E /I %ROOT%\pyside-setup\pyside3_install\py3.7-qt5.12.3-64bit-release\include %QROOT%\PySide\PySide2\include`
     **Copy files into folder `%QROOT%\PySide\PySide2`:**
-		`copy %ROOT%\pyside-setup\pyside2_build\py2.7-qt5.12.3-64bit-release\shiboken2\generator\shiboken2.exe %QROOT%\PySide\PySide2`  
-		`copy %ROOT%\pyside-setup\pyside2_install\py2.7-qt5.12.3-64bit-release\lib\site-packages\shiboken2\shiboken2.pyd %QROOT%\PySide\PySide2`  
-		`copy %ROOT%\pyside-setup\pyside2_install\py2.7-qt5.12.3-64bit-release\bin\shiboken2-python2.7.dll %QROOT%\PySide\PySide2`  
-		`copy %ROOT%\pyside-setup\pyside2_install\py2.7-qt5.12.3-64bit-release\lib\shiboken2-python2.7.lib %QROOT%\PySide\PySide2`  
+		`copy %ROOT%\pyside-setup\pyside3_build\py3.7-qt5.12.3-64bit-release\shiboken2\generator\shiboken2.exe %QROOT%\PySide\PySide2` 
+		`copy %ROOT%\pyside-setup\pyside3_install\py3.7-qt5.12.3-64bit-release\lib\site-packages\shiboken2\shiboken2.cp37-win_amd64.pyd %QROOT%\PySide\PySide2`  
+		`copy %ROOT%\pyside-setup\pyside3_install\py3.7-qt5.12.3-64bit-release\bin\shiboken2.cp37-win_amd64.dll %QROOT%\PySide\PySide2`  
+		`copy %ROOT%\pyside-setup\pyside3_install\py3.7-qt5.12.3-64bit-release\lib\shiboken2.cp37-win_amd64.lib %QROOT%\PySide\PySide2` 
 		`copy %ROOT%\libclang\bin\libclang.dll %QROOT%\PySide\PySide2`
-    `xcopy /E /I %ROOT%\pyside-setup\build\lib.win-amd64-2.7\pyside2uic %QROOT%\PySide\pyside2uic`
+    `xcopy /E /I %ROOT%\pyside-setup\build\lib.win-amd64-3.7\pyside2uic %QROOT%\PySide\pyside2uic`
 
 `Qt` is the QT SDK, store it in `%ENGINE_ROOT%/Code/SDKs/Qt`
 
-TODO: 
-	Goes from 1GB to 6GB? wtf?
-	Some bonus cleanup/etc. missing?
 
 BONUS:
 ## 3\. GammaRay build: [Spy++ for Qt]
