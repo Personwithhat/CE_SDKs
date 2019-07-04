@@ -17,7 +17,7 @@ Requirements:
 	
 4.  Git & CMake (for getting PySide2 sources)
 5.  Clang (used for PySide2 compilation)
-	http://download.qt.io/development_releases/prebuilt/libclang/libclang-release_80-based-windows-vs2017_64.7z
+	https://download.qt.io/development_releases/prebuilt/libclang/libclang-release_80-based-windows-vs2017_64.7z
 
 ## 1\. Build QT
 1. Create working folder, set var. (Disk should have at least 140GB room) 
@@ -41,7 +41,7 @@ Requirements:
 
 ## 2\. PySide2 build: python wrappers around Qt, shiboken2.exe for wrappers generation around CryQt
 1.  `cd %ROOT% && git clone --recursive https://code.qt.io/pyside/pyside-setup`  
-2.  `cd %ROOT%\pyside-setup && git checkout 5.12.3`  
+2.  `cd %ROOT%\pyside-setup && git checkout 5.12.3 && cd %ROOT%\pyside-setup\sources\pyside2-tools && git checkout v5.12.3`  
 3.  Unzip downloaded libclang-release.7z into %ROOT%\libclang  
 4:	Apply workaround, otherwise setup.py can't find OPENGL libraries for compilation and throws `fatal: 'GLES2/gl2.h' file not found`.
 	`xcopy /E /I %ROOT%\msvc2017_64\include\QtANGLE %ROOT%\msvc2017_64\include\`
@@ -56,7 +56,7 @@ Requirements:
     `python setup.py build --qmake=%ROOT%\msvc2017_64\bin\qmake.exe --ignore-git --skip-docs --no-examples` 
 	
 6.  Setup SDK file tree: 
-	`set QROOT=%ROOT%\Qt\5.12.3\msvc2017_64`
+	`set QROOT=%ROOT%\Qt\5.12.3_python_37\msvc2017_64`
 	`mkdir %QROOT% && move /y %ROOT%\msvc2017_64 %QROOT%\Qt`
     `xcopy /E /I %ROOT%\pyside-setup\build\lib.win-amd64-3.7\PySide2 %QROOT%\PySide\PySide2`
 	`del /Q %QROOT%\PySide\PySide2\include`
